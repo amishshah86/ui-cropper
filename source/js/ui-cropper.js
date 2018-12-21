@@ -45,6 +45,7 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
             dominantColor: '=?',
             paletteColor: '=?',
             paletteColorLength: '=?',
+            areaColorPalette: '=?',
 
             onChange: '&',
             onLoadBegin: '&',
@@ -309,6 +310,10 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
                 if (scope.allowCropResizeOnCorners) {
                     cropHost.setAllowCropResizeOnCorners(scope.allowCropResizeOnCorners);
                 }
+            });
+
+            scope.$watch('areaColorPalette', function () {
+                cropHost.setAreaColorPalette(scope.areaColorPalette);
             });
 
             // Update CropHost dimensions when the directive element is resized

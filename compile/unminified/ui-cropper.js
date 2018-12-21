@@ -5,7 +5,7 @@
  * Copyright (c) 2018 Alex Kaul
  * License: MIT
  *
- * Generated at Tuesday, December 11th, 2018, 7:28:54 PM
+ * Generated at Friday, December 21st, 2018, 1:59:54 PM
  */
 (function() {
 angular.module('uiCropper', []);
@@ -1236,6 +1236,10 @@ angular.module('uiCropper').factory('cropArea', ['cropCanvas', function (CropCan
     CropArea.prototype.processMouseUp = function () {
     };
 
+    CropArea.prototype.setAreaColorPalette = function (areaColorPalette) {
+        this._cropCanvas.setAreaColorPalette(areaColorPalette);
+    };
+
     return CropArea;
 }]);
 
@@ -1431,6 +1435,16 @@ angular.module('uiCropper').factory('cropCanvas', [function() {
             ctx.clip();
 
             ctx.restore();
+        };
+
+        this.setAreaColorPalette = function (areaPalette) {
+            if(areaPalette) {
+                for(var k in areaPalette) {
+                    if(areaPalette[k] && areaPalette[k].length) {
+                        colors[k] = areaPalette[k];
+                    }
+                }
+            }
         };
 
     };
@@ -3209,6 +3223,10 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
             theArea.setSize(size);
         };
 
+        this.setAreaColorPalette = function (areaColorPalette) {
+            theArea.setAreaColorPalette(areaColorPalette);
+        };
+
         /* Life Cycle begins */
 
         // Init Context var
@@ -3316,6 +3334,7 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
             dominantColor: '=?',
             paletteColor: '=?',
             paletteColorLength: '=?',
+            areaColorPalette: '=?',
 
             onChange: '&',
             onLoadBegin: '&',
@@ -3579,6 +3598,10 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
                 if (scope.allowCropResizeOnCorners) {
                     cropHost.setAllowCropResizeOnCorners(scope.allowCropResizeOnCorners);
                 }
+            });
+
+            scope.$watch('areaColorPalette', function () {
+                cropHost.setAreaColorPalette(scope.areaColorPalette);
             });
 
             // Update CropHost dimensions when the directive element is resized

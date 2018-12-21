@@ -963,6 +963,10 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
             theArea.setSize(size);
         };
 
+        this.setAreaColorPalette = function (areaColorPalette) {
+            theArea.setAreaColorPalette(areaColorPalette);
+        };
+
         /* Life Cycle begins */
 
         // Init Context var

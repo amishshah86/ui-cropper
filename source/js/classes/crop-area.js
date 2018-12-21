@@ -415,5 +415,9 @@ angular.module('uiCropper').factory('cropArea', ['cropCanvas', function (CropCan
     CropArea.prototype.processMouseUp = function () {
     };
 
+    CropArea.prototype.setAreaColorPalette = function (areaColorPalette) {
+        this._cropCanvas.setAreaColorPalette(areaColorPalette);
+    };
+
     return CropArea;
 }]);
