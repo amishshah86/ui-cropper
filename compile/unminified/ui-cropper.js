@@ -2,10 +2,10 @@
  * uiCropper v1.0.8
  * https://crackerakiua.github.io/ui-cropper/
  *
- * Copyright (c) 2018 Alex Kaul
+ * Copyright (c) 2019 Alex Kaul
  * License: MIT
  *
- * Generated at Friday, December 21st, 2018, 1:59:54 PM
+ * Generated at Friday, September 27th, 2019, 5:31:37 PM
  */
 (function() {
 angular.module('uiCropper', []);
@@ -198,9 +198,9 @@ angular.module('uiCropper').factory('cropAreaRectangle', ['cropArea', function (
     var CropAreaRectangle = function () {
         CropArea.apply(this, arguments);
 
-        this._resizeCtrlBaseRadius = 15;
-        this._resizeCtrlNormalRatio = 0.6;
-        this._resizeCtrlHoverRatio = 0.70;
+        this._resizeCtrlBaseRadius = 20;
+        this._resizeCtrlNormalRatio = 0.9;
+        this._resizeCtrlHoverRatio = 1.2;
         this._iconMoveNormalRatio = 0.9;
         this._iconMoveHoverRatio = 1.2;
 
