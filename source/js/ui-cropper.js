@@ -5,6 +5,7 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
         restrict: 'E',
         scope: {
             image: '=',
+            imageAngle: '=?',
             resultImage: '=',
             resultArrayImage: '=?',
             resultBlob: '=?',
@@ -206,6 +207,21 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
                 element.append('<div class="loading"><span>' + scope.chargement + '...</span></div>');
             };
 
+            var onImageInputUpdate = function () {
+                if (scope.image) {
+                    displayLoading();
+                }
+                // cancel timeout if necessary
+                if (scope.timeout !== null) {
+                    $timeout.cancel(scope.timeout);
+                }
+                scope.timeout = $timeout(function () {
+                    scope.timeout = null;
+                    cropHost.setInitMax(scope.initMaxArea);
+                    cropHost.setNewImageSource(scope.image, scope.imageAngle);
+                }, 100);
+            };
+
             // Setup CropHost Event Handlers
             events
                 .on('load-start', fnSafeApply(function (scope) {
@@ -241,18 +257,12 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
 
             // Sync CropHost with Directive's options
             scope.$watch('image', function (newVal) {
-                if (newVal) {
-                    displayLoading();
+                onImageInputUpdate();
+            });
+            scope.$watch('imageAngle', function (newVal, oldVal) {
+                if(newVal !== oldVal) {
+                    onImageInputUpdate();
                 }
-                // cancel timeout if necessary
-                if (scope.timeout !== null) {
-                    $timeout.cancel(scope.timeout);
-                }
-                scope.timeout = $timeout(function () {
-                    scope.timeout = null;
-                    cropHost.setInitMax(scope.initMaxArea);
-                    cropHost.setNewImageSource(scope.image);
-                }, 100);
             });
             scope.$watch('areaType', function () {
                 cropHost.setAreaType(scope.areaType);
