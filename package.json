@@ -37,7 +37,7 @@
   "homepage": "https://crackerakiua.github.io/ui-cropper/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CrackerakiUA/ui-cropper/"
+    "url": "https://github.com/amishshah86/ui-cropper/"
   },
   "scripts": {
     "build": "gulp build",

@@ -2,10 +2,10 @@
  * uiCropper v1.0.8
  * https://crackerakiua.github.io/ui-cropper/
  *
- * Copyright (c) 2018 Alex Kaul
+ * Copyright (c) 2019 Alex Kaul
  * License: MIT
  *
- * Generated at Tuesday, December 11th, 2018, 7:28:54 PM
+ * Generated at Tuesday, October 1st, 2019, 10:56:45 AM
  */
 (function() {
 angular.module('uiCropper', []);
@@ -198,9 +198,9 @@ angular.module('uiCropper').factory('cropAreaRectangle', ['cropArea', function (
     var CropAreaRectangle = function () {
         CropArea.apply(this, arguments);
 
-        this._resizeCtrlBaseRadius = 15;
-        this._resizeCtrlNormalRatio = 0.6;
-        this._resizeCtrlHoverRatio = 0.70;
+        this._resizeCtrlBaseRadius = 20;
+        this._resizeCtrlNormalRatio = 0.9;
+        this._resizeCtrlHoverRatio = 1.2;
         this._iconMoveNormalRatio = 0.9;
         this._iconMoveHoverRatio = 1.2;
 
@@ -1236,6 +1236,10 @@ angular.module('uiCropper').factory('cropArea', ['cropCanvas', function (CropCan
     CropArea.prototype.processMouseUp = function () {
     };
 
+    CropArea.prototype.setAreaColorPalette = function (areaColorPalette) {
+        this._cropCanvas.setAreaColorPalette(areaColorPalette);
+    };
+
     return CropArea;
 }]);
 
@@ -1431,6 +1435,16 @@ angular.module('uiCropper').factory('cropCanvas', [function() {
             ctx.clip();
 
             ctx.restore();
+        };
+
+        this.setAreaColorPalette = function (areaPalette) {
+            if(areaPalette) {
+                for(var k in areaPalette) {
+                    if(areaPalette[k] && areaPalette[k].length) {
+                        colors[k] = areaPalette[k];
+                    }
+                }
+            }
         };
 
     };
@@ -2734,7 +2748,7 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
             return theArea;
         };
 
-        this.setNewImageSource = function (imageSource) {
+        this.setNewImageSource = function (imageSource, imageAngle) {
             image = null;
             resetCropHost();
             if (imageSource) {
@@ -2745,41 +2759,40 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
                     cropEXIF.getData(newImage, function () {
                         var orientation = cropEXIF.getTag(newImage, 'Orientation');
 
-                        if ([3, 6, 8].indexOf(orientation) > -1) {
+                        imageAngle = imageAngle || 0;
+                        var deg = 0;
+                        switch (orientation) {
+                            case 3:
+                                deg = 180;
+                                break;
+                            case 6:
+                                deg = 90;
+                                break;
+                            case 8:
+                                deg = 270;
+                                break;
+                        }
+
+                        deg += imageAngle;
+                        while(deg > 360) {
+                            deg -= 360;
+                        }
+
+                        while(deg < 0) {
+                            deg += 360;
+                        }
+
+                        if (deg !== 0) {
                             var canvas = document.createElement('canvas'),
                                 ctx = canvas.getContext('2d'),
                                 cw = newImage.width,
                                 ch = newImage.height,
-                                cx = 0,
-                                cy = 0,
-                                deg = 0,
+                                cx = 0, // eslint-disable-line no-unused-vars
+                                cy = 0, // eslint-disable-line no-unused-vars
                                 rw = 0,
                                 rh = 0;
                             rw = cw;
                             rh = ch;
-                            switch (orientation) {
-                                case 3:
-                                    cx = -newImage.width;
-                                    cy = -newImage.height;
-                                    deg = 180;
-                                    break;
-                                case 6:
-                                    cw = newImage.height;
-                                    ch = newImage.width;
-                                    cy = -newImage.height;
-                                    rw = ch;
-                                    rh = cw;
-                                    deg = 90;
-                                    break;
-                                case 8:
-                                    cw = newImage.height;
-                                    ch = newImage.width;
-                                    cx = -newImage.width;
-                                    rw = ch;
-                                    rh = cw;
-                                    deg = 270;
-                                    break;
-                            }
 
                             //// canvas.toDataURL will only work if the canvas isn't too large. Resize to 1000px.
                             var maxWorH = 1000;
@@ -2801,10 +2814,50 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
                                 rh = p * rh;
                             }
 
+                            switch (deg) {
+                                // Logic for special angles of imageAngle rotation and calculation of canvas
+                                // dimensions to accommodate the entire image in the crop area
+                                case 180:
+                                    cx = -rw;
+                                    cy = -rh;
+                                    break;
+                                case 90:
+                                    cw = rh;
+                                    ch = rw;
+                                    cy = -rh;
+                                    rw = ch;
+                                    rh = cw;
+                                    break;
+                                case 270:
+                                    cw = rh;
+                                    ch = rw;
+                                    cx = -rw;
+                                    rw = ch;
+                                    rh = cw;
+                                    break;
+
+                                // Logic for general imageAngle rotation and calculation of canvas
+                                // dimensions to accommodate the entire image in the crop area
+                                default:
+                                    var imageAngleRadians = (deg || 0) * (Math.PI/180);
+                                    var cosImageAngle = Math.cos(imageAngleRadians);
+                                    var sinImageAngle = Math.sin(imageAngleRadians);
+                                    if (sinImageAngle < 0) { sinImageAngle = -sinImageAngle; }
+                                    if (cosImageAngle < 0) { cosImageAngle = -cosImageAngle; }
+                                    //use translated width and height for new canvas
+                                    cw = rh * sinImageAngle + rw * cosImageAngle;
+                                    ch = rh * cosImageAngle + rw * sinImageAngle;
+                                    break;
+
+                            }
+
                             canvas.width = cw;
                             canvas.height = ch;
+
+                            ctx.translate(cw/2, ch/2);
                             ctx.rotate(deg * Math.PI / 180);
-                            ctx.drawImage(newImage, cx, cy, rw, rh);
+                            // ctx.drawImage(newImage, cx, cy); // deprecated in favor of origin translate before rotation (not using cx, cy)
+                            ctx.drawImage(newImage, -rw/2, -rh/2, rw, rh);
 
                             image = new Image();
                             image.onload = function () {
@@ -3209,6 +3262,10 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
             theArea.setSize(size);
         };
 
+        this.setAreaColorPalette = function (areaColorPalette) {
+            theArea.setAreaColorPalette(areaColorPalette);
+        };
+
         /* Life Cycle begins */
 
         // Init Context var
@@ -3276,6 +3333,7 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
         restrict: 'E',
         scope: {
             image: '=',
+            imageAngle: '=?',
             resultImage: '=',
             resultArrayImage: '=?',
             resultBlob: '=?',
@@ -3316,6 +3374,7 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
             dominantColor: '=?',
             paletteColor: '=?',
             paletteColorLength: '=?',
+            areaColorPalette: '=?',
 
             onChange: '&',
             onLoadBegin: '&',
@@ -3476,6 +3535,21 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
                 element.append('<div class="loading"><span>' + scope.chargement + '...</span></div>');
             };
 
+            var onImageInputUpdate = function () {
+                if (scope.image) {
+                    displayLoading();
+                }
+                // cancel timeout if necessary
+                if (scope.timeout !== null) {
+                    $timeout.cancel(scope.timeout);
+                }
+                scope.timeout = $timeout(function () {
+                    scope.timeout = null;
+                    cropHost.setInitMax(scope.initMaxArea);
+                    cropHost.setNewImageSource(scope.image, scope.imageAngle);
+                }, 100);
+            };
+
             // Setup CropHost Event Handlers
             events
                 .on('load-start', fnSafeApply(function (scope) {
@@ -3509,19 +3583,13 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
                 }));
 
             // Sync CropHost with Directive's options
-            scope.$watch('image', function (newVal) {
-                if (newVal) {
-                    displayLoading();
+            scope.$watch('image', function () {
+                onImageInputUpdate();
+            });
+            scope.$watch('imageAngle', function (newVal, oldVal) {
+                if(newVal !== oldVal) {
+                    onImageInputUpdate();
                 }
-                // cancel timeout if necessary
-                if (scope.timeout !== null) {
-                    $timeout.cancel(scope.timeout);
-                }
-                scope.timeout = $timeout(function () {
-                    scope.timeout = null;
-                    cropHost.setInitMax(scope.initMaxArea);
-                    cropHost.setNewImageSource(scope.image);
-                }, 100);
             });
             scope.$watch('areaType', function () {
                 cropHost.setAreaType(scope.areaType);
@@ -3579,6 +3647,10 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
                 if (scope.allowCropResizeOnCorners) {
                     cropHost.setAllowCropResizeOnCorners(scope.allowCropResizeOnCorners);
                 }
+            });
+
+            scope.$watch('areaColorPalette', function () {
+                cropHost.setAreaColorPalette(scope.areaColorPalette);
             });
 
             // Update CropHost dimensions when the directive element is resized
