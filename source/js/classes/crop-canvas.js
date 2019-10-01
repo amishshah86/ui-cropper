@@ -195,5 +195,15 @@ angular.module('uiCropper').factory('cropCanvas', [function() {
             ctx.restore();
         };
 
+        this.setAreaColorPalette = function (areaPalette) {
+            if(areaPalette) {
+                for(var k in areaPalette) {
+                    if(areaPalette[k] && areaPalette[k].length) {
+                        colors[k] = areaPalette[k];
+                    }
+                }
+            }
+        };
+
     };
 }]);

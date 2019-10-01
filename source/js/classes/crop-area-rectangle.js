@@ -4,9 +4,9 @@ angular.module('uiCropper').factory('cropAreaRectangle', ['cropArea', function (
     var CropAreaRectangle = function () {
         CropArea.apply(this, arguments);
 
-        this._resizeCtrlBaseRadius = 15;
-        this._resizeCtrlNormalRatio = 0.6;
-        this._resizeCtrlHoverRatio = 0.70;
+        this._resizeCtrlBaseRadius = 20;
+        this._resizeCtrlNormalRatio = 0.9;
+        this._resizeCtrlHoverRatio = 1.2;
         this._iconMoveNormalRatio = 0.9;
         this._iconMoveHoverRatio = 1.2;
 
