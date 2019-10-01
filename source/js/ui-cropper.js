@@ -256,7 +256,7 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
 
 
             // Sync CropHost with Directive's options
-            scope.$watch('image', function (newVal) {
+            scope.$watch('image', function () {
                 onImageInputUpdate();
             });
             scope.$watch('imageAngle', function (newVal, oldVal) {

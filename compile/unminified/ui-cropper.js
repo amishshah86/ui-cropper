@@ -5,7 +5,7 @@
  * Copyright (c) 2019 Alex Kaul
  * License: MIT
  *
- * Generated at Friday, September 27th, 2019, 5:31:37 PM
+ * Generated at Tuesday, October 1st, 2019, 10:56:45 AM
  */
 (function() {
 angular.module('uiCropper', []);
@@ -2774,18 +2774,21 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
                         }
 
                         deg += imageAngle;
-                        while(deg > 360)
+                        while(deg > 360) {
                             deg -= 360;
-                        while(deg < 0)
-                          deg += 360;
+                        }
 
-                        if (deg !=0) {
+                        while(deg < 0) {
+                            deg += 360;
+                        }
+
+                        if (deg !== 0) {
                             var canvas = document.createElement('canvas'),
                                 ctx = canvas.getContext('2d'),
                                 cw = newImage.width,
                                 ch = newImage.height,
-                                cx = 0,
-                                cy = 0,
+                                cx = 0, // eslint-disable-line no-unused-vars
+                                cy = 0, // eslint-disable-line no-unused-vars
                                 rw = 0,
                                 rh = 0;
                             rw = cw;
@@ -3580,7 +3583,7 @@ angular.module('uiCropper').directive('uiCropper', ['$timeout', 'cropHost', 'cro
                 }));
 
             // Sync CropHost with Directive's options
-            scope.$watch('image', function (newVal) {
+            scope.$watch('image', function () {
                 onImageInputUpdate();
             });
             scope.$watch('imageAngle', function (newVal, oldVal) {
