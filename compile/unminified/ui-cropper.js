@@ -5,7 +5,7 @@
  * Copyright (c) 2019 Alex Kaul
  * License: MIT
  *
- * Generated at Tuesday, October 1st, 2019, 10:56:45 AM
+ * Generated at Monday, October 14th, 2019, 7:18:26 PM
  */
 (function() {
 angular.module('uiCropper', []);
@@ -2348,7 +2348,7 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
                 ctx.save();
 
                 // and make it darker
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
                 ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
                 ctx.restore();

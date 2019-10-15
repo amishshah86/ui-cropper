@@ -88,7 +88,7 @@ angular.module('uiCropper').factory('cropHost', ['$document', '$q', 'cropAreaCir
                 ctx.save();
 
                 // and make it darker
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
                 ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
                 ctx.restore();
